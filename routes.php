@@ -4,11 +4,11 @@ namespace Fredao\Router;
 require_once './http.php';
 require_once './auth.php';
 require_once './user.model.php';
+require_once './user.routes.php';
 
-use Fredao\Position;
 use Fredao\Http;
-use Fredao\Auth;
 use Model\UserModel;
+use Fredao\Auth;
 
 $url_array = array();
 
@@ -30,76 +30,62 @@ function run($databaseConn): void
     array_shift($url_array);
 
     match ($url_array[1]) {
-        'user' => user_routes($method, new UserModel($databaseConn)),
+        'user' => user_routes($method, new UserModel($databaseConn), $url_array),
+        'image' => image_route($method, new UserModel($databaseConn)),
         '' => fredao_route($method, $request),
         default => Http::not_found(),
     };
 }
 
-// In theory thats not rest
-// in rest there's no session, and also the pararameters are not implemented
-function user_routes(string $method, UserModel $model): void
+function image_route(string $method, UserModel $model) 
 {
     global $url_array;
 
     switch ($method) {
-        case Http::GET:
-            Http::build_response(
-                200,
-                array("logged" => Auth\is_logged(), ...Auth\get_session_data())
-            );
-            return;
+        case Http::GET: 
+            $id = get_id_in_url($model);
+            if (!$id) {
+                return;
+            }
 
-        case Http::POST:
+            $result = $model->get_by_id($id);
+            if (!$result) {
+                Http::build_response(404, 'could not find user with given id');
+                
+                return;
+            }
+
+            $base64_image = base64_encode($result->profilePic);
+            Http::build_response(200, array("image" => $base64_image));
+            break;
+
+        // TODO - make it so that is only possible to change you own profile pic (if not adm)
+        case Http::PUT:
+            $id = get_id_in_url($model);
+            if (!$id) {
+                return;
+            }
+
             $body = file_get_contents('php://input');
             $decoded = json_decode($body, true);
-
-            $username = $decoded['username'];
-            $password = $decoded['password'];
-            if (!isset($username) || !isset($password)) {
-                Http::build_response(422, "Unable to proccess body");
-
-                return;
-            }
-
-            $model->username = $username;
-            $model->password = $password;
-            if ($url_array[2] == 'login') {
-                $account = $model->getByAccount();
-
-                if ($account != null) {
-                    Auth\init_session($username, $password, Position::User);
-                    Http::build_response(200);
-
-                    return;
-                }
-            }
-
-            if ($url_array[2] == 'logout') {
-                if (!session_destroy()) {
-                    Http::build_response(500, "failed to destroy current session");
-    
-                    return;
-                }
-    
-                Http::build_response(204);
-                return;
-            }
-
-            if (!$model->insert()) {
-                Http::build_response(500, "Failed to insert user data into database");
+            
+            $image = base64_decode($decoded['data'], true);
+            if (!$image) {
+                Http::build_response(422, "invalid image");
 
                 return;
             }
 
-            Auth\init_session($username, $password, Position::User);
-            Http::build_response(201, "Created session\n$username: $password");
-            return;
+            if (!Auth\is_logged()) {
+                Http::build_response(401);
 
-        case Http::DELETE:
-            // TODO - get id
-            if (!session_destroy()) {
-                Http::build_response(500, "failed to destroy current session");
+                return;
+            }
+
+            $model->id = $id;
+            $model->profilePic = $image;
+            if (!$model->update_image()) {
+                Http::build_response(500, "failed to upload image");
 
                 return;
             }
@@ -107,23 +93,7 @@ function user_routes(string $method, UserModel $model): void
             Http::build_response(204);
             return;
 
-        case Http::PUT:
-            $body = file_get_contents('php://input');
-            $decoded = json_decode($body, true);
-
-            $username = $decoded['username'];
-            $password = $decoded['password'];
-            if (!isset($username) || !isset($password)) {
-                Http::build_response(422, "Unable to proccess body");
-
-                return;
-            }
-            return;
-
-        default:
-            Http::build_response(405, "method not allowed");
-
-            return;
+        default: Http::not_found();
     }
 }
 
@@ -140,4 +110,23 @@ function fredao_route(string $method, bool|array $request): void
     }
 
     echo json_encode(array('hello' => 'fredao', 'req' => $request));
+}
+
+function get_id_in_url(UserMoDel $model): int|bool {
+    global $url_array;
+
+    if (empty($url_array[2])) {
+        Http::build_response(400, "Invalid ID");
+
+        return false;
+    }
+
+    $id = intval($url_array[2]);
+    if (!$model->get_by_id($id)) {
+        Http::not_found();
+
+        return false;
+    }
+
+    return $id;
 }

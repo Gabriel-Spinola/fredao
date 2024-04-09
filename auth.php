@@ -5,9 +5,9 @@ use Fredao\Position;
 
 final class UserSessionFields
 {
-    public const isLogged = 'isLogged';
-    public const username = 'username';
-    public const password = 'password';
+    public const IS_LOGGED = 'isLogged';
+    public const USERNAME = 'username';
+    public const PASSWORD = 'password';
 }
 
 function init_session(
@@ -16,9 +16,9 @@ function init_session(
     Position $position,
 ): void {
     // REVIEW - make the field a reference to the $_SESSION
-    $_SESSION[UserSessionFields::isLogged] = true;
-    $_SESSION[UserSessionFields::username] = $username;
-    $_SESSION[UserSessionFields::password] = $password;
+    $_SESSION[UserSessionFields::IS_LOGGED] = true;
+    $_SESSION[UserSessionFields::USERNAME] = $username;
+    $_SESSION[UserSessionFields::PASSWORD] = $password;
     $_SESSION[Position::class] = $position->value;
 }
 
@@ -27,14 +27,15 @@ function is_logged(): bool
     return isset($_SESSION['isLogged']);
 }
 
-function is_validated()
+function is_validated(Position $level): bool
 {
     return isset($_SESSION[Position::class]) && $_SESSION[Position::class] == Position::User->value;
 }
 
-function get_session_data(): array {
+function get_session_data(): array 
+{
     return array(
-        "user" => $_SESSION[UserSessionFields::username],
-        "password" => $_SESSION[UserSessionFields::password],
+        "user" => $_SESSION[UserSessionFields::USERNAME],
+        "password" => $_SESSION[UserSessionFields::PASSWORD],
     );
-} 
+}

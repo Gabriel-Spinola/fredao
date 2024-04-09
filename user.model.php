@@ -14,7 +14,7 @@ class UserModel {
     public ?int $id;
     public string $username;
     public string $password;
-    public null $profilePic = null;
+    public ?string $profilePic = null;
 
     public function __construct(
         private Database $db,
@@ -24,7 +24,7 @@ class UserModel {
 
     }
 
-    public function getById(int $id): ?UserModel {
+    public function get_by_id(int $id): ?UserModel {
         $query = $this->db->connect()->prepare("SELECT * FROM " . UserModelFields::TABLE_NAME . " WHERE `id`=?;");
         $query->execute([$id]);
 
@@ -32,7 +32,7 @@ class UserModel {
         return $this->collect($data);
     }
 
-    public function getByAccount(): ?UserModel {
+    public function get_by_account(): ?UserModel {
         $query = $this->db->connect()->prepare("SELECT * FROM " . UserModelFields::TABLE_NAME . " WHERE `name`=? AND `password`=?;");
         $query->execute([$this->username, $this->password]);
 
@@ -61,19 +61,28 @@ class UserModel {
     public function update(UserModel $user): ?UserModel {
         $query = $this->db->connect()->prepare(
             "UPDATE " . UserModelFields::TABLE_NAME . 
-            "SET `id`=?, `name`=?, `password`=?, `profile-pic`=?",  
+            "SET `name`=?, `password`=?, `profile-pic`=?",  
         );
 
-        $query->execute([$user->id, $user->username, $user->password, null]);
+        $query->execute([$user->username, $user->password, null]);
         $data = $query->fetchAll();
 
         return $this->collect($data);
     } 
 
+    public function update_image(): bool {
+        $query = $this->db->connect()->prepare(
+            "UPDATE " . UserModelFields::TABLE_NAME . 
+            " SET `profile-pic`=? WHERE `id`=?",  
+        );
+
+        return $query->execute([$this->profilePic, $this->id]);
+    }
+
     public function delete(int $id): bool {
         $query = $this->db->connect()->prepare(
             "DELETE FROM " . UserModelFields::TABLE_NAME . 
-            "WHERE `id`=?"
+            " WHERE `id`=?"
         );
 
         $query->execute([$id]);
@@ -89,6 +98,7 @@ class UserModel {
         $model->id = $data[0]['id'];
         $model->username = $data[0]['name'];
         $model->password = $data[0]['password'];
+        $model->profilePic = $data[0]['profile-pic'];
 
         return $model;  
     }

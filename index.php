@@ -1,4 +1,4 @@
-<?php
+<?php // TODO - Implement ENV
 namespace Fredao;
 
 require_once './routes.php';
