@@ -1,0 +1,8 @@
+{
+    "url": "http://localhost/fredao/",
+    "method": "GET",
+    "body": {
+        "username": "ggabriel",
+        "password": "123"
+    }
+}
