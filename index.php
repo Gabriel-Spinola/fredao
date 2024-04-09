@@ -1,14 +1,10 @@
 <?php
 namespace Fredao;
 
-require './routes.php';
-require './database.php';
+require_once './routes.php';
+require_once './database.php';
 
-// gabriel.fredaugusto.com.br
-const DATABASE_HOST = "https://gabriel.fredaugusto.com.br/";
-const DATABASE_PORT = "";
-const DATABASE_USER = "u168309973_gabriel";
-const DATABASE_PASSWORD = "RBO098oP";
+use Database;
 
 enum Position: string
 {
@@ -18,5 +14,10 @@ enum Position: string
 
 session_start();
 
+error_reporting(E_ALL);
+ini_set('display_errors', 'On');
+
+$database = new Database();
+
 Router\allow_cors();
-Router\run();
+Router\run($database);

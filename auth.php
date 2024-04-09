@@ -31,3 +31,10 @@ function is_validated()
 {
     return isset($_SESSION[Position::class]) && $_SESSION[Position::class] == Position::User->value;
 }
+
+function get_session_data(): array {
+    return array(
+        "user" => $_SESSION[UserSessionFields::username],
+        "password" => $_SESSION[UserSessionFields::password],
+    );
+} 

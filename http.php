@@ -17,7 +17,7 @@ final class Http
 
     public static function build_response(
         int $status_code,
-        string $message = ''
+        string|array $message = ''
     ): void {
         $http_status_codes = [
             400 => "Bad Request",
@@ -36,7 +36,7 @@ final class Http
         $status_text = $http_status_codes[$status_code] ?? "Unknown Status";
 
         header("HTTP/1.0 $status_code $status_text");
-        echo "$status_code $status_text: $message";
+        echo json_encode($message);
     }
 
     public static function not_found(): void
