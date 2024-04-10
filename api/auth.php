@@ -37,5 +37,6 @@ function get_session_data(): array
     return array(
         "user" => $_SESSION[UserSessionFields::USERNAME],
         "password" => $_SESSION[UserSessionFields::PASSWORD],
+        "session-id" => session_id(),
     );
 }

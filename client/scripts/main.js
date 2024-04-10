@@ -2,7 +2,9 @@
 
 const apiBaseUrl = "http://localhost/fredao/api/";
 const submitter = document.querySelector("button[value=enviar]")
+const sessionId = null
 
+// IDEA - when logged in api return session id, then we use it to check if we're logged in
 async function handleLogin() {
     const form = document.getElementById("login-form")
     

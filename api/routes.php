@@ -31,10 +31,10 @@ function run($databaseConn): void
 {
     global $url_array;
     header("Content-type: application/json");
+
     allow_cors();
 
     $method = $_SERVER['REQUEST_METHOD'];
-
     $url_array = explode('/', $_SERVER['REQUEST_URI']);
 
     // Removes the two first indicies from the array (/fredao/api/)
@@ -122,7 +122,7 @@ function fredao_route(string $method): void
         return;
     }
 
-    echo json_encode(array('hello' => 'fredao'));
+    echo json_encode(array('hello' => 'fredao', 'session' => session_id()));
 }
 
 function get_id_in_url(UserMoDel $model): int|bool {
