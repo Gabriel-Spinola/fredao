@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Front do fredão</title>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="./styles/style.css">
+</head>
+<body>
+    <header class="center">
+        <h1>Site do Fredão</h1>
+
+        <br>
+
+        <button onclick="checkSession()">check session</button>
+    </header>
+
+    <main class="center">
+        <section id="login">
+            <article id="login-box">
+                <h3>Login</h3>
+
+                <form id="login-form" method="post">
+                    <div class="field">
+                        <label for="username">Nome de Usuário</label>
+                        <input type="text" name="username" id="username" />
+                    </div>
+
+                    <div class="field">
+                        <label for="password">Senha</label>
+                        <input type="text" name="password" id="password" />
+                    </div>
+
+                    <a href="#register-box">Não tem conta?</a>
+
+                    <input 
+                        type="button"
+                        value="enviar" 
+                        name="submit" 
+                        class="submit-button" 
+                        onclick="handleLogin()" 
+                    />
+                </form>
+            </article>
+
+            <article id="register-box">
+                <h3>Register</h3>
+
+                <form id="register-form" method="post">
+                    <div class="field">
+                        <label for="username">Nome de Usuário</label>
+                        <input type="text" name="username" id="username" />
+                    </div>
+
+                    <div class="field">
+                        <label for="password">Senha</label>
+                        <input type="text" name="password" id="password" />
+                    </div>
+
+                    <div class="field">
+                        <label for="confirm-password">Confimer sua Senha</label>
+                        <input type="text" name="confirm-password"id="confirm-password" />
+                    </div>
+
+                    <a href="#login-box">Fazer login?</a>
+
+                    <input 
+                        type="button" 
+                        value="enviar" 
+                        name="submit" 
+                        class="submit-button" 
+                        onclick="async () => await handleRegister()" />
+                </form>
+            </article>
+        </section>
+    </main>
+
+    <footer>
+        <section id="logo">
+            <article id="login">
+                
+            </article>
+        </section>
+
+        <section id="about">
+            <article></article>
+        </section>
+    </footer>
+
+    <script src="./scripts/main.js"></script>
+</body>
+</html>
