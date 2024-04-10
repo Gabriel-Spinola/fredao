@@ -20,10 +20,6 @@ class UserModel {
         private Database $db,
     ) {}
 
-    public function get(): ?UserModel {
-
-    }
-
     public function get_by_id(int $id): ?UserModel {
         $query = $this->db->connect()->prepare("SELECT * FROM " . UserModelFields::TABLE_NAME . " WHERE `id`=?;");
         $query->execute([$id]);

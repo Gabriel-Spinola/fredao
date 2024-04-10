@@ -9,22 +9,31 @@ require_once './user.routes.php';
 use Fredao\Http;
 use Model\UserModel;
 use Fredao\Auth;
+use Fredao\Position;
 
 $url_array = array();
 
 function allow_cors(): void
 {
-    header("Access-Control-Allow-Origin: *");
-    header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH, OPTIONS");
-    header("Content-type: application/json");
+    header('Access-Control-Allow-Origin: *');
+    header("Access-Control-Allow-Credentials: true");
+    header('Access-Control-Allow-Methods: PUT, GET, POST, DELETE, OPTIONS, HEAD');
+    header('Access-Control-Allow-Headers: Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers');
+    header('Access-Control-Max-Age: 86400');
+
+    // Exit early so the page isn't fully loaded for options requests
+    if (strtolower($_SERVER['REQUEST_METHOD']) == 'options') {
+        exit();
+    }
 }
 
 function run($databaseConn): void
 {
     global $url_array;
+    header("Content-type: application/json");
+    allow_cors();
 
     $method = $_SERVER['REQUEST_METHOD'];
-    $request = explode("/", substr(@$_SERVER['PATH_INFO'], 1));
 
     $url_array = explode('/', $_SERVER['REQUEST_URI']);
     array_shift($url_array);
@@ -32,7 +41,7 @@ function run($databaseConn): void
     match ($url_array[1]) {
         'user' => user_routes($method, new UserModel($databaseConn), $url_array),
         'image' => image_route($method, new UserModel($databaseConn)),
-        '' => fredao_route($method, $request),
+        '' => fredao_route($method),
         default => Http::not_found(),
     };
 }
@@ -43,6 +52,7 @@ function image_route(string $method, UserModel $model)
 
     switch ($method) {
         case Http::GET: 
+            if (Auth\is_validated(Position::Admin)) {}
             $id = get_id_in_url($model);
             if (!$id) {
                 return;
@@ -101,7 +111,7 @@ function image_route(string $method, UserModel $model)
  * @param string
  * @param bool|string[] 
  */
-function fredao_route(string $method, bool|array $request): void
+function fredao_route(string $method): void
 {
     if ($method != Http::GET) {
         Http::not_found();
@@ -109,7 +119,7 @@ function fredao_route(string $method, bool|array $request): void
         return;
     }
 
-    echo json_encode(array('hello' => 'fredao', 'req' => $request));
+    echo json_encode(array('hello' => 'fredao'));
 }
 
 function get_id_in_url(UserMoDel $model): int|bool {

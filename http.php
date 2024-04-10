@@ -36,7 +36,7 @@ final class Http
         $status_text = $http_status_codes[$status_code] ?? "Unknown Status";
 
         header("HTTP/1.0 $status_code $status_text");
-        echo json_encode($message);
+        echo json_encode(array('status' => $status_code, "message" => $message));
     }
 
     public static function not_found(): void

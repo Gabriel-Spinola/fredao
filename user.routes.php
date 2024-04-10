@@ -10,38 +10,16 @@ use Fredao\Position;
 use Model\UserModel;
 use Fredao\Http;
 
-// In theory thats not rest
-// in rest there's no session, and also the pararameters are not implemented
 function user_routes(string $method, UserModel $model, array $url_array): void
 {
-    switch ($method) {
-        case Http::GET:
-            handle_get();
-            break;
-
-        case Http::POST:
-            handle_post($model, $url_array);
-            break;
-
-        case Http::DELETE:
-            handle_delete($model, $url_array);
-            break;
-
-        case Http::PUT:
-            $body = file_get_contents('php://input');
-            $decoded = json_decode($body, true);
-
-            $username = $decoded['username'];
-            $password = $decoded['password'];
-            if (!isset($username) || !isset($password)) {
-                Http::build_response(422, "Unable to proccess body");
-
-                return;
-            }
-            return;
-
-        default: Http::build_response(405, "method not allowed");
-    }
+    match ($method) {
+        Http::GET => handle_get(),
+        Http::POST => handle_post($model, $url_array),
+        Http::PUT => handle_put(),
+        Http::DELETE => handle_delete($model, $url_array),
+        
+        default => Http::build_response(405, "method not allowed"),
+    };
 }
 
 function handle_get(): void
@@ -68,6 +46,14 @@ function handle_post(UserModel $model, array $url_array)
     $model->username = $username;
     $model->password = $password;
     if ($url_array[2] == 'login') {
+        if (isset($_SESSION['isLogged'])) {
+            if (!session_destroy()) {
+                Http::build_response(500, "Failed to destroy previus session");
+
+                return;
+            }
+        }
+
         $account = $model->get_by_account();
 
         if ($account != null) {
@@ -75,7 +61,10 @@ function handle_post(UserModel $model, array $url_array)
             Http::build_response(200);
 
             return;
-        }
+        } 
+
+        Http::build_response(404, "Usuário não encontrado ou não existe");
+        return;
     }
 
     if ($url_array[2] == 'logout') {
@@ -97,6 +86,20 @@ function handle_post(UserModel $model, array $url_array)
 
     Auth\init_session($username, $password, Position::User);
     Http::build_response(201, "Created session\n$username: $password");
+}
+
+function handle_put() 
+{
+    $body = file_get_contents('php://input');
+    $decoded = json_decode($body, true);
+
+    $username = $decoded['username'];
+    $password = $decoded['password'];
+    if (!isset($username) || !isset($password)) {
+        Http::build_response(422, "Unable to proccess body");
+
+        return;
+    }
 }
 
 function handle_delete(UserModel $model, array $url_array) 
