@@ -36,6 +36,9 @@ function run($databaseConn): void
     $method = $_SERVER['REQUEST_METHOD'];
 
     $url_array = explode('/', $_SERVER['REQUEST_URI']);
+
+    // Removes the two first indicies from the array (/fredao/api/)
+    array_shift($url_array);
     array_shift($url_array);
 
     match ($url_array[1]) {

@@ -58,7 +58,7 @@ function handle_post(UserModel $model, array $url_array)
 
         if ($account != null) {
             Auth\init_session($username, $password, Position::User);
-            Http::build_response(200);
+            Http::build_response(200, "logged in");
 
             return;
         } 

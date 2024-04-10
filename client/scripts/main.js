@@ -1,6 +1,6 @@
 /// <reference path="types.d.ts" />
 
-const apiBaseUrl = "http://localhost/fredao/";
+const apiBaseUrl = "http://localhost/fredao/api/";
 const submitter = document.querySelector("button[value=enviar]")
 
 async function handleLogin() {
