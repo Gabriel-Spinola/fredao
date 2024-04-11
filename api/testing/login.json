@@ -1,0 +1,8 @@
+{
+    "url": "http://localhost/fredao/api/user/login",
+    "method": "POST",
+    "body": {
+        "username": "gabriel",
+        "password": "123"
+    }
+}

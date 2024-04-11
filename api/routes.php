@@ -44,9 +44,63 @@ function run($databaseConn): void
     match ($url_array[1]) {
         'user' => user_routes($method, new UserModel($databaseConn), $url_array),
         'image' => image_route($method, new UserModel($databaseConn)),
+        'auth' => auth_routes($method),
+        'authb' => auth_inverse_routes($method),
         '' => fredao_route($method),
         default => Http::not_found(),
     };
+}
+
+function auth_routes(string $method): void {
+    $passphrase = "123";
+    $id = 3;
+
+    $today = date(DATE_ATOM);
+    $exp_date = date(DATE_ATOM, strtotime($today . ' + 1 days'));
+
+    $target_data = strval($id) . $exp_date;
+
+
+    // Option 1
+    // $key = hash('sha256', strval($id) . $exp_date);
+    $iv = openssl_random_pseudo_bytes(16);
+
+    // [25] => aes-256-cbc-hmac-sha256
+    $sha256 = openssl_get_cipher_methods()[25];
+    
+    $encrypted = openssl_encrypt($target_data, $sha256, $passphrase, 0, /*$iv*/);
+    echo $encrypted;
+    //$decrypted = openssl_decrypt($encrypted, $sha256, $passphrase, 0, '11121');
+    Http::build_response(200, array("encoded" => $encrypted, "decoded" => 'decrypted'));
+}
+
+function auth_inverse_routes(string $method): void {
+    $passphrase = "123";
+    $id = 2;
+
+    $body = file_get_contents('php://input');
+    $decoded = json_decode($body, true);
+    
+    $key = $decoded['key'];
+    if (!isset($key)) {
+        Http::build_response(422, "Unable to proccess body");
+
+        return;
+    }
+
+    // $iv = openssl_random_pseudo_bytes(16);
+
+    // [25] => aes-256-cbc-hmac-sha256
+    $sha256 = openssl_get_cipher_methods()[25];
+    $decrypted = openssl_decrypt($key, $sha256, $passphrase, 0, /*$iv*/);
+
+    if (!$decrypted) {
+        Http::build_response(500, "Failed to decrypt");
+
+        die;
+    }
+
+    Http::build_response(200, array("decoded" => $decrypted));
 }
 
 function image_route(string $method, UserModel $model) 
