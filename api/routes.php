@@ -5,11 +5,13 @@ require_once './http.php';
 require_once './auth.php';
 require_once './user.model.php';
 require_once './user.routes.php';
+require_once './crypt.php';
 
 use Fredao\Http;
 use Model\UserModel;
 use Fredao\Auth;
 use Fredao\Position;
+use Fredao\Crypt\Crypt;
 
 $url_array = array();
 
@@ -60,24 +62,13 @@ function auth_routes(string $method): void {
 
     $target_data = strval($id) . $exp_date;
 
-
-    // Option 1
-    // $key = hash('sha256', strval($id) . $exp_date);
-    $iv = openssl_random_pseudo_bytes(16);
-
-    // [25] => aes-256-cbc-hmac-sha256
-    $sha256 = openssl_get_cipher_methods()[25];
-    
-    $encrypted = openssl_encrypt($target_data, $sha256, $passphrase, 0, /*$iv*/);
+    $encrypted = Crypt::encrypt($target_data);
     echo $encrypted;
     //$decrypted = openssl_decrypt($encrypted, $sha256, $passphrase, 0, '11121');
     Http::build_response(200, array("encoded" => $encrypted, "decoded" => 'decrypted'));
 }
 
 function auth_inverse_routes(string $method): void {
-    $passphrase = "123";
-    $id = 2;
-
     $body = file_get_contents('php://input');
     $decoded = json_decode($body, true);
     
@@ -88,12 +79,7 @@ function auth_inverse_routes(string $method): void {
         return;
     }
 
-    // $iv = openssl_random_pseudo_bytes(16);
-
-    // [25] => aes-256-cbc-hmac-sha256
-    $sha256 = openssl_get_cipher_methods()[25];
-    $decrypted = openssl_decrypt($key, $sha256, $passphrase, 0, /*$iv*/);
-
+    $decrypted = Crypt::decrypt($key);
     if (!$decrypted) {
         Http::build_response(500, "Failed to decrypt");
 
