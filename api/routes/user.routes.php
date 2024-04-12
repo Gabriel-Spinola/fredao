@@ -46,15 +46,6 @@ function handle_post(UserModel $model, array $url_array)
     $model->username = $username;
     $model->password = $password;
     if ($url_array[2] == 'login') {
-        // REVIEW4
-        if (isset($_SESSION['isLogged'])) {
-            if (!session_destroy()) {
-                Http::build_response(500, "Failed to destroy previus session");
-
-                return;
-            }
-        }
-
         $account = $model->get_by_account();
         if ($account == null) {     
             Http::build_response(404, "Usuário não encontrado ou não existe");
@@ -72,17 +63,6 @@ function handle_post(UserModel $model, array $url_array)
         Auth\init_session($username, $password, Position::User);
         Http::build_response(200, $encrypted_token);
 
-        return;
-    }
-
-    if ($url_array[2] == 'logout') {
-        if (!session_destroy()) {
-            Http::build_response(500, "failed to destroy current session");
-
-            return;
-        }
-
-        Http::build_response(204);
         return;
     }
 

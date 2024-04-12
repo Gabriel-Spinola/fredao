@@ -7,6 +7,12 @@ const session_token_field = 'session_token'
 
 // IDEA - when logged in api return session id, then we use it to check if we're logged in
 async function handleLogin() {
+    if (await checkSession()) {
+        alert('Você já está logado')
+
+        return
+    }
+
     const form = document.getElementById("login-form")
     
     const formData = new FormData(form, submitter)
@@ -23,7 +29,6 @@ async function handleLogin() {
      * @type {FrontFredao.UserInfo}
      */
     const bodyData = { username, password }
-    console.log(JSON.stringify(bodyData))
     try {        
         const response = await fetch(`${apiBaseUrl}user/login`, {
             method: "POST",
@@ -76,11 +81,18 @@ async function handleRegister() {
     }
 }
 
+/**
+ * @returns {Promise<boolean>}
+ */
 async function checkSession() {
     const session_token = sessionStorage.getItem(session_token_field)
+    if (session_token === null) {
+        console.log("no session")
+        return false
+    }
+
     const tokenData = { key: session_token }
 
-    console.log(session_token)
     try {
         const response = await fetch(`${apiBaseUrl}auth`, {
             method: 'POST',
@@ -94,11 +106,26 @@ async function checkSession() {
             throw new Error("Response's not okay")
         }
 
+        /**
+         * @type {FrontFredao.APIResponse}
+         */
         const data = await response.json()
-        console.log(JSON.stringify(data))
+        console.log(data.message)
+
+        return true
     } catch (e) {
         console.error(e)
     }
+
+    return false
+}
+
+async function checkIncorrectSession() {
+    const sample_token = ''
+}
+
+function removeCurrentSession() {
+    sessionStorage.removeItem(session_token_field)
 }
 
 const testApi = (async () => {
