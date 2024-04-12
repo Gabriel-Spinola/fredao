@@ -1,9 +1,9 @@
 <?php
 namespace Fredao\Router;
 
-require_once './http.php';
-require_once './auth.php';
-require_once './user.model.php';
+require_once __DIR__ . '/../http.php';
+require_once __DIR__ . '/../auth/auth.php';
+require_once __DIR__ . '/../models/user.model.php';
 
 use Fredao\Auth;
 use Fredao\Position;
@@ -46,6 +46,7 @@ function handle_post(UserModel $model, array $url_array)
     $model->username = $username;
     $model->password = $password;
     if ($url_array[2] == 'login') {
+        // REVIEW4
         if (isset($_SESSION['isLogged'])) {
             if (!session_destroy()) {
                 Http::build_response(500, "Failed to destroy previus session");
@@ -55,15 +56,22 @@ function handle_post(UserModel $model, array $url_array)
         }
 
         $account = $model->get_by_account();
+        if ($account == null) {     
+            Http::build_response(404, "Usuário não encontrado ou não existe");
 
-        if ($account != null) {
-            Auth\init_session($username, $password, Position::User);
-            Http::build_response(200, strval(session_id()));
-
-            return;
+            return;   
         } 
 
-        Http::build_response(404, "Usuário não encontrado ou não existe");
+        $encrypted_token = Auth\create_user_token($account->id);
+        if (!$encrypted_token) {
+            Http::build_response(500, "failed to create user session/token");
+
+            die;
+        }
+
+        Auth\init_session($username, $password, Position::User);
+        Http::build_response(200, $encrypted_token);
+
         return;
     }
 

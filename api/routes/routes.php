@@ -1,17 +1,18 @@
 <?php
+/// TODO - RouterFactory
+
 namespace Fredao\Router;
 
-require_once './http.php';
-require_once './auth.php';
-require_once './user.model.php';
-require_once './user.routes.php';
-require_once './crypt.php';
+require_once __DIR__ . '/../http.php';
+require_once __DIR__ . '/../models/user.model.php';
+require_once __DIR__ . '/user.routes.php';
+require_once __DIR__ . '/../auth/auth.php';
+require_once __DIR__ . '/../auth/crypt.php';
 
 use Fredao\Http;
 use Model\UserModel;
 use Fredao\Auth;
 use Fredao\Position;
-use Fredao\Crypt\Crypt;
 
 $url_array = array();
 
@@ -46,53 +47,44 @@ function run($databaseConn): void
     match ($url_array[1]) {
         'user' => user_routes($method, new UserModel($databaseConn), $url_array),
         'image' => image_route($method, new UserModel($databaseConn)),
-        'auth' => auth_routes($method),
-        'authb' => auth_inverse_routes($method),
+        'auth' => auth_routes($method, new UserModel($databaseConn)),
         '' => fredao_route($method),
         default => Http::not_found(),
     };
 }
 
-function auth_routes(string $method): void {
-    $passphrase = "123";
-    $id = 3;
-
-    $today = date(DATE_ATOM);
-    $exp_date = date(DATE_ATOM, strtotime($today . ' + 1 days'));
-
-    $target_data = strval($id) . $exp_date;
-
-    $encrypted = Crypt::encrypt($target_data);
-    echo $encrypted;
-    //$decrypted = openssl_decrypt($encrypted, $sha256, $passphrase, 0, '11121');
-    Http::build_response(200, array("encoded" => $encrypted, "decoded" => 'decrypted'));
-}
-
-function auth_inverse_routes(string $method): void {
-    $body = file_get_contents('php://input');
-    $decoded = json_decode($body, true);
-    
-    $key = $decoded['key'];
-    if (!isset($key)) {
-        Http::build_response(422, "Unable to proccess body");
-
-        return;
-    }
-
-    $decrypted = Crypt::decrypt($key);
-    if (!$decrypted) {
-        Http::build_response(500, "Failed to decrypt");
+function auth_routes(string $method, UserModel $model): void {
+    if ($method !== Http::POST) {
+        Http::build_response(405);
 
         die;
     }
 
-    Http::build_response(200, array("decoded" => $decrypted));
+    $body = file_get_contents('php://input');
+    if (!$body || strlen($body) < 1) {
+        Http::build_response(422, "Body should not be empty");
+    }
+
+    $decoded = json_decode($body, true);
+    
+    $key = $decoded['key'];
+    if (!isset($key)) {
+        Http::build_response(422, "Key is not optional");
+
+        die;
+    }
+
+    match (Auth\validate_user($key, $model)) {
+        500 => Http::build_response(500, "Failed to decrypt"),
+        401 => Http::build_response(401, 'Login expired'),
+        404 => Http::build_response(401, 'User not found'),
+        422 => Http::build_response(422, "Failed to proccess the user data"),
+        default => Http::build_response(200, "User's valid"),
+    };
 }
 
 function image_route(string $method, UserModel $model) 
 {
-    global $url_array;
-
     switch ($method) {
         case Http::GET: 
             if (Auth\is_validated(Position::Admin)) {}

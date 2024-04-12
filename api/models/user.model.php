@@ -1,7 +1,7 @@
 <?php
 namespace Model;
 
-require "./database.php";
+require  __DIR__ . "/../database.php";
 
 use Database;
 use PDOException;

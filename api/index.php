@@ -3,8 +3,8 @@ declare(strict_types= 1);
 
 namespace Fredao;
 
-require_once './routes.php';
-require_once './database.php';
+require_once  __DIR__ . '/routes/routes.php';
+require_once  __DIR__ . '/database.php';
 
 use Database;
 
@@ -21,7 +21,6 @@ $env = parse_ini_file('.env');
 
 error_reporting(E_ALL);
 ini_set('display_errors', 'On');
-
 
 $database = new Database();
 
