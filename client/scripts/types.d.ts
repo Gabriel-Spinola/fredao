@@ -3,4 +3,9 @@ declare namespace FrontFredao {
         username: string,
         password: string,
     }
+    
+    export type APIResponse = {
+        status: number,
+        message: string,
+    }
 }

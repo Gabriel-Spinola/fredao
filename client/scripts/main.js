@@ -3,6 +3,7 @@
 const apiBaseUrl = "http://localhost/fredao/api/";
 const submitter = document.querySelector("button[value=enviar]")
 const sessionId = null
+const session_token_field = 'session_token'
 
 // IDEA - when logged in api return session id, then we use it to check if we're logged in
 async function handleLogin() {
@@ -22,7 +23,7 @@ async function handleLogin() {
      * @type {FrontFredao.UserInfo}
      */
     const bodyData = { username, password }
-    
+    console.log(JSON.stringify(bodyData))
     try {        
         const response = await fetch(`${apiBaseUrl}user/login`, {
             method: "POST",
@@ -42,8 +43,15 @@ async function handleLogin() {
             throw new Error("Response's not okay")
         }
 
+        /**
+         * @type {FrontFredao.APIResponse}
+         */
         const data = await response.json()
-        console.log(JSON.stringify(data))
+        const token = data.message
+
+        sessionStorage.setItem(session_token_field, token);
+        console.log('SESSION: ' + sessionStorage.getItem(session_token_field))
+        /// TODO - REDIRECT
     } catch (e) {
         console.error(e)
     }
@@ -69,8 +77,15 @@ async function handleRegister() {
 }
 
 async function checkSession() {
+    const session_token = sessionStorage.getItem(session_token_field)
+    const tokenData = { key: session_token }
+
+    console.log(session_token)
     try {
-        const response = await fetch(`${apiBaseUrl}user`)
+        const response = await fetch(`${apiBaseUrl}auth`, {
+            method: 'POST',
+            body: JSON.stringify(tokenData)
+        })
 
         if (!response.ok) {
             const data = await response.json()

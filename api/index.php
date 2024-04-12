@@ -8,6 +8,8 @@ require_once  __DIR__ . '/database.php';
 
 use Database;
 
+define("ERROR_REPORTING", 0);
+
 enum Position: string
 {
     case User = 'USER';
@@ -19,8 +21,13 @@ session_start();
 
 $env = parse_ini_file('.env');
 
-error_reporting(E_ALL);
-ini_set('display_errors', 'On');
+if (ERROR_REPORTING === 1) {
+    error_reporting(E_ALL);
+    ini_set('display_errors', 'On');
+} 
+else {
+    error_reporting(E_ERROR | E_PARSE);
+}
 
 $database = new Database();
 

@@ -6,8 +6,8 @@ namespace Fredao\Router;
 require_once __DIR__ . '/../http.php';
 require_once __DIR__ . '/../models/user.model.php';
 require_once __DIR__ . '/user.routes.php';
-require_once __DIR__ . '/../auth/auth.php';
-require_once __DIR__ . '/../auth/crypt.php';
+require_once __DIR__ . '/../authentication/auth.php';
+require_once __DIR__ . '/../authentication/crypt.php';
 
 use Fredao\Http;
 use Model\UserModel;
@@ -33,9 +33,9 @@ function allow_cors(): void
 function run($databaseConn): void
 {
     global $url_array;
-    header("Content-type: application/json");
-
+    
     allow_cors();
+    header("Content-type: application/json");
 
     $method = $_SERVER['REQUEST_METHOD'];
     $url_array = explode('/', $_SERVER['REQUEST_URI']);
@@ -53,16 +53,19 @@ function run($databaseConn): void
     };
 }
 
-function auth_routes(string $method, UserModel $model): void {
+function auth_routes(string $method, UserModel $model): void 
+{
     if ($method !== Http::POST) {
         Http::build_response(405);
 
-        die;
+        return;
     }
 
     $body = file_get_contents('php://input');
     if (!$body || strlen($body) < 1) {
         Http::build_response(422, "Body should not be empty");
+
+        return;
     }
 
     $decoded = json_decode($body, true);
@@ -71,14 +74,15 @@ function auth_routes(string $method, UserModel $model): void {
     if (!isset($key)) {
         Http::build_response(422, "Key is not optional");
 
-        die;
+        return;
     }
 
     match (Auth\validate_user($key, $model)) {
         500 => Http::build_response(500, "Failed to decrypt"),
         401 => Http::build_response(401, 'Login expired'),
-        404 => Http::build_response(401, 'User not found'),
-        422 => Http::build_response(422, "Failed to proccess the user data"),
+        404 => Http::build_response(404, 'User not found'),
+        422 => Http::build_response(422, array("Failed to proccess the user data", $key)),
+
         default => Http::build_response(200, "User's valid"),
     };
 }
@@ -154,7 +158,7 @@ function fredao_route(string $method): void
         return;
     }
 
-    echo json_encode(array('hello' => 'fredao', 'session' => session_id()));
+    echo json_encode(array('hello' => 'fredao'));
 }
 
 function get_id_in_url(UserMoDel $model): int|bool {

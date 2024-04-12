@@ -1,7 +1,7 @@
 {
-    "url": "http://localhost/fredao/api/authb",
+    "url": "http://localhost/fredao/api/auth",
     "method": "POST",
     "body": {
-        "key": "RB/hkpMlPK5/QIdGQmMn/Wbhtx4Rmnn+pFiJn2Y="
+        "key": "RB/hkpMlPK5/QIdGQmMn/WDhtB8Rmnf+pFiJn2Y="
     }
 }

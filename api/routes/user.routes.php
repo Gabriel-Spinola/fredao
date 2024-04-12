@@ -2,7 +2,7 @@
 namespace Fredao\Router;
 
 require_once __DIR__ . '/../http.php';
-require_once __DIR__ . '/../auth/auth.php';
+require_once __DIR__ . '/../authentication/auth.php';
 require_once __DIR__ . '/../models/user.model.php';
 
 use Fredao\Auth;
@@ -64,7 +64,7 @@ function handle_post(UserModel $model, array $url_array)
 
         $encrypted_token = Auth\create_user_token($account->id);
         if (!$encrypted_token) {
-            Http::build_response(500, "failed to create user session/token");
+            Http::build_response(500, "failed to create user session/token " . $encrypted_token);
 
             die;
         }

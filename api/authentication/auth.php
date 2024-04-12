@@ -70,7 +70,7 @@ function get_session_data(): array
 function create_user_token(int $id): string|bool 
 {
     $formatted_id = str_pad((string) $id, USER_ID_BYTES_LENGTH, '0', STR_PAD_LEFT);
-    if (strlen($formatted_id) === USER_ID_BYTES_LENGTH) {
+    if (strlen($formatted_id) !== USER_ID_BYTES_LENGTH) {
         return false;
     }
 
@@ -78,7 +78,7 @@ function create_user_token(int $id): string|bool
 
     $today = date(DATE_ATOM);
     $exp_time = strtotime($today . $exp_offset);
-    if (!$exp_offset) {
+    if (!$exp_time) {
         return false;
     }
 
@@ -88,7 +88,6 @@ function create_user_token(int $id): string|bool
     }
 
     $target_data = $formatted_id . $exp_date;
-
     return Crypt::encrypt($target_data);
 }
 
