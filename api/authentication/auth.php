@@ -28,6 +28,8 @@ define("USER_ID_BYTES_LENGTH", 4);
 define("EXP_DATE_BYTES_LENGTH", 25);
 
 /**
+ * REVIEW - Instead of return a bool for error and string for success, consider asking for a reference to hold the result and return only true or false if failed or not
+ * 
  * @param int $id the target user id. this id will be converted to a "0000" trailing format, so it can fit into the encryption bytes length requirement
  * @return string|bool the encrypted token on success or false on failure
  */
