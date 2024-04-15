@@ -1,4 +1,8 @@
 <?php
+/**
+ * ! Authenticated routes require the user token as first parameter
+ */
+
 namespace Fredao\Router;
 
 require_once __DIR__ . "/../http.php";

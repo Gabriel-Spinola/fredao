@@ -1,6 +1,10 @@
 <?php
-/// TODO - RouterFactory
+/**
+ * ! Authenticated routes require the user token as first parameter
+ * REVIEW - Using '|' to replace '/' in the url params
+ */
 
+/// TODO - RouterFactory
 namespace Fredao\Router;
 
 require_once __DIR__ . "/../http.php";
@@ -12,7 +16,6 @@ require_once __DIR__ . "/../authentication/crypt.php";
 use Fredao\Http;
 use Model\UserModel;
 use Fredao\Auth;
-use Fredao\Position;
 use Fredao\StatusCode;
 
 $url_array = array();
@@ -92,8 +95,21 @@ function image_route(string $method, UserModel $model)
 {
     switch ($method) {
         case Http::GET:
-            $id = get_id_in_url($model);
-            if (!$id) {
+            $token = ""; 
+            if (!get_param_from_url($token, 0)) {
+                return;
+            }
+
+            $id = null;
+            if (!Auth\validate_user($token, $model, $id)) {
+                Http::build_response(StatusCode::UNAUTHORIZED);
+                
+                return;
+            }
+
+            if ($id === null) {
+                Http::build_response(StatusCode::UNAUTHORIZED);
+                
                 return;
             }
 
@@ -105,32 +121,41 @@ function image_route(string $method, UserModel $model)
             }
 
             $base64_image = base64_encode($result->profilePic);
-            Http::build_response(StatusCode::OK, array("image" => $base64_image));
+            $response = array("image" => $base64_image);
+
+           // echo json_encode($response);
+            Http::build_response(StatusCode::OK, $response);
             break;
 
         // TODO - make it so that is only possible to change you own profile pic (if not adm)
         case Http::PUT:
-            $id = get_id_in_url($model);
-            if (!$id) {
+            $token = ""; 
+            if (!get_param_from_url($token, 0)) {
+                return;
+            }
+
+            $id = null;
+            if (!Auth\validate_user($token, $model, $id)) {
+                Http::build_response(StatusCode::UNAUTHORIZED);
+                
+                return;
+            }
+
+            if ($id === null) {
+                Http::build_response(StatusCode::UNAUTHORIZED);
+                
                 return;
             }
 
             $body = file_get_contents("php://input");
             $decoded = json_decode($body, true);
 
-            $image = base64_decode($decoded["data"], true);
+            $image = base64_encode($decoded["data"]);
             if (!$image) {
                 Http::build_response(StatusCode::UNPROCESSABLE_ENTITY, "invalid image");
 
                 return;
             }
-
-            // TODO - auth
-            // if (!Auth\is_logged()) {
-            //     Http::build_response(StatusCode::UNAUTHORIZED);
-
-            //     return;
-            // }
 
             $model->id = $id;
             $model->profilePic = $image;
@@ -140,7 +165,7 @@ function image_route(string $method, UserModel $model)
                 return;
             }
 
-            Http::build_response(StatusCode::NO_CONTENT);
+            Http::build_response(StatusCode::OK);
             return;
 
         default:
@@ -163,17 +188,33 @@ function fredao_route(string $method): void
     echo json_encode(array("hello" => "fredao"));
 }
 
-function get_id_in_url(UserMoDel $model): int|bool
+/**
+ * @param int start from 0, being 0 the first param
+ */
+function get_param_from_url(string &$param, int $index): bool
 {
     global $url_array;
 
-    if (empty($url_array[2])) {
-        Http::build_response(StatusCode::BAD_REQUEST, "Invalid ID");
+    if (empty($url_array[$index + 2])) {
+        Http::build_response(StatusCode::BAD_REQUEST, "Invalid parameters");
 
         return false;
     }
 
-    $id = intval($url_array[2]);
+    $param = str_replace("%7C", "/", $url_array[$index + 2]);
+    return true;
+}
+
+function get_id_in_url(UserMoDel $model, int $index = 0): int|bool
+{
+    global $url_array;
+
+    $param = "";
+    if(!get_param_from_url($param, $index)) {
+        return false;
+    }
+
+    $id = intval($param);
     if (!$model->get_by_id($id)) {
         Http::not_found();
 
@@ -182,3 +223,4 @@ function get_id_in_url(UserMoDel $model): int|bool
 
     return $id;
 }
+

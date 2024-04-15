@@ -11,7 +11,7 @@
  * 
  * user_id = 4 bytes
  * exp_date = 25 bytes (REVIEW - could be smaller) 
- * hash offset = 29 bytes
+ * ?hash offset = 29 bytes
  * hash layout sha256(user_id + exp_date) maybe? (+ hash(password || email || unique_id))
  */
 
@@ -59,10 +59,10 @@ function create_user_token(int $id): string|bool
 
 /**
  * both user id & exp_date must conform to their corresponding bytes length rules defined at the top of the file
- * @return int proccess status code
+ * @return StatusCode proccess status code
  * Validates the given key. For now the validations procces is: 1st. check if the token is not expired; 2nd; check if the extracted id correspond to a user in the database
  */
-function validate_user(string $key, UserModel $model): StatusCode
+function validate_user(string $key, UserModel $model, ?int &$ok_id = null): StatusCode
 {
     $decrypted = Crypt::decrypt($key);
     if (!$decrypted) {
@@ -74,6 +74,7 @@ function validate_user(string $key, UserModel $model): StatusCode
         $id_buffer .= $decrypted[$i];
     }
 
+    // FIXME - this line of code is vulnerable. It can be fixed by implementing the hash 
     $id = (string) ((int) $id_buffer);
 
     $offset = USER_ID_BYTES_LENGTH;
@@ -100,5 +101,6 @@ function validate_user(string $key, UserModel $model): StatusCode
         return StatusCode::NOT_FOUND;
     }
 
+    $ok_id = $id;
     return StatusCode::OK;
 }

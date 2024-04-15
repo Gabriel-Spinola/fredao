@@ -45,6 +45,7 @@ async function handleLogin() {
                 alert(message)
             } 
 
+            console.log(data)
             throw new Error("Response's not okay")
         }
 
@@ -59,6 +60,7 @@ async function handleLogin() {
         /// TODO - REDIRECT
     } catch (e) {
         console.error(e)
+        
     }
 }
 
@@ -151,6 +153,7 @@ async function checkSession() {
 
 function removeCurrentSession() {
     sessionStorage.removeItem(session_token_field)
+    sessionStorage.removeItem(session_id_field)
 }
 
 const testApi = (async () => {
@@ -170,3 +173,29 @@ const testApi = (async () => {
         console.error(e)
     }
 })()
+
+/// NOTE - Not implemented
+/**
+ * @template Params
+ * @param {(params: Params) => Promise<Response>} request 
+ * @returns {FrontFredao.FrabricatedResponse}
+ */
+function requestFactory(request) {
+    return async (params) => {
+        try {
+            const response = await request(params)
+
+            if (!response.ok) {
+                const { message } = await response.json()
+
+                console.error("Response's not okay: ", JSON.stringify(message))
+                throw new Error("Response's not okay")
+            }
+
+            const { message } = await response.json()
+            return message
+        } catch (error) {
+            console.error('Request failed: ', JSON.stringify(error))
+        }
+    }
+}

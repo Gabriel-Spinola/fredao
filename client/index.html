@@ -20,8 +20,9 @@
 
         <button onclick="checkSession()">check session</button>
         <button onclick="removeCurrentSession()">remove session</button>
-        <button onclick="checkIncorrectSession()">check incorrect session</button>
         <button onclick="logout()">check incorrect session</button>
+
+        <a href="http://localhost:80/fredao/client/only_auth.html">authenticated</a>
     </header>
 
     <main class="center">
@@ -31,16 +32,16 @@
 
                 <form id="login-form" method="post">
                     <div class="field">
-                        <label for="username">Nome de Usuário</label>
-                        <input type="text" name="username" id="username" />
+                        <label for="login-username">Nome de Usuário</label>
+                        <input type="text" name="username" id="login-username" required />
                     </div>
 
                     <div class="field">
-                        <label for="password">Senha</label>
-                        <input type="text" name="password" id="password" />
+                        <label for="login-password">Senha</label>
+                        <input type="password" name="password" id="login-password" required />
                     </div>
 
-                    <a href="#register-box">Não tem conta?</a>
+                    <a href="http://localhost:80/fredao/client/#register-box">Não tem conta?</a>
 
                     <input type="button" value="enviar" name="submit" class="submit-button" onclick="handleLogin()" />
                 </form>
@@ -51,24 +52,24 @@
 
                 <form id="register-form" method="post">
                     <div class="field">
-                        <label for="username">Nome de Usuário</label>
-                        <input type="text" name="username" id="username" />
+                        <label for="register-username">Nome de Usuário</label>
+                        <input type="text" name="username" id="register-username" required />
                     </div>
 
                     <div class="field">
-                        <label for="password">Senha</label>
-                        <input type="text" name="password" id="password" />
+                        <label for="register-password">Senha</label>
+                        <input type="password" name="password" id="register-password" required />
                     </div>
 
                     <div class="field">
                         <label for="confirm-password">Confimer sua Senha</label>
-                        <input type="text" name="confirm-password" id="confirm-password" />
+                        <input type="password" name="confirm-password" id="confirm-password" required />
                     </div>
 
-                    <a href="#login-box">Fazer login?</a>
+                    <a href="http://localhost:80/fredao/client/#login-box">Fazer login?</a>
 
                     <input type="button" value="enviar" name="submit" class="submit-button"
-                        onclick="async () => await handleRegister()" />
+                        onclick="handleRegister()" />
                 </form>
             </article>
         </section>
@@ -86,7 +87,7 @@
         </section>
     </footer>
 
-    <script src="/client/scripts/main.js" type="application/javascript"></script>
+    <script src="http://localhost/fredao/client/scripts/main.js" type="application/javascript"></script>
 </body>
 
 </html>
