@@ -1,25 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+
 <body>
     <h1>Authorized Only</h1>
 
+    <form method="POST">
+        <div class="field">
+            <label for="image">Foto de perfil</label>
+            <input type="image" name="image" id="image">
+        </div>
+
+        <input type="submit" value="enviar" name="submit" onclick="() => console.warn('image form not implemented')">
+    </form>
+
+    <!-- REVIEW - Make module -->
     <script src="/client/scripts/main.js" type="application/javascript"></script>
     <script type="application/javascript">
         window.onload = () => {
             const loginPageUrl = "http://127.0.0.1:5500/client/index.html#login-box"
 
-            checkSession().then((val) => {
-                if (!val) {
-                    console.log("yau")
+            checkSession().then((isAuthenticated) => {
+                if (!isAuthenticated) {
                     window.location.replace(loginPageUrl)
                 }
             }).catch((_e) => window.location.replace(loginPageUrl))
         }
     </script>
 </body>
+
 </html>

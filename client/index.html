@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,11 +13,10 @@
     <link rel="stylesheet" href="./styles/style.css">
     <base href="http://127.0.0.1:5500/fredao/client/index.html#login-box" />
 </head>
+
 <body>
     <header class="center">
         <h1>Site do Fredão</h1>
-
-        <br>
 
         <button onclick="checkSession()">check session</button>
         <button onclick="removeCurrentSession()">remove session</button>
@@ -42,13 +42,7 @@
 
                     <a href="#register-box">Não tem conta?</a>
 
-                    <input 
-                        type="button"
-                        value="enviar" 
-                        name="submit" 
-                        class="submit-button" 
-                        onclick="handleLogin()" 
-                    />
+                    <input type="button" value="enviar" name="submit" class="submit-button" onclick="handleLogin()" />
                 </form>
             </article>
 
@@ -68,16 +62,12 @@
 
                     <div class="field">
                         <label for="confirm-password">Confimer sua Senha</label>
-                        <input type="text" name="confirm-password"id="confirm-password" />
+                        <input type="text" name="confirm-password" id="confirm-password" />
                     </div>
 
                     <a href="#login-box">Fazer login?</a>
 
-                    <input 
-                        type="button" 
-                        value="enviar" 
-                        name="submit" 
-                        class="submit-button" 
+                    <input type="button" value="enviar" name="submit" class="submit-button"
                         onclick="async () => await handleRegister()" />
                 </form>
             </article>
@@ -87,7 +77,7 @@
     <footer>
         <section id="logo">
             <article id="login">
-                
+
             </article>
         </section>
 
@@ -98,4 +88,5 @@
 
     <script src="/client/scripts/main.js" type="application/javascript"></script>
 </body>
+
 </html>

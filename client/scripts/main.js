@@ -79,6 +79,35 @@ async function handleRegister() {
     if (password !== confirmPass) {
         alert("As senhas não batem")
     }
+
+    /**
+     * @type {FrontFredao.UserInfo}
+     */
+    const bodyData = { username, password }
+    try {        
+        const response = await fetch(`${apiBaseUrl}user/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(bodyData),
+        })
+
+        if (!response.ok) {
+            const data = await response.json()
+            console.error("Response's not okay: ", JSON.stringify(data))
+
+            const { message } = data 
+            throw new Error("Response's not okay " + message)
+        }
+
+        /**
+         * @type {FrontFredao.APIResponse}
+         */
+        const data = await response.json()
+        console.log(JSON.stringify(data))
+        // TODO - Redirect to login field on success
+    } catch (e) {
+        console.error(e)
+    }
 }
 
 /**
@@ -118,10 +147,6 @@ async function checkSession() {
     }
 
     return false
-}
-
-async function checkIncorrectSession() {
-    const sample_token = ''
 }
 
 function removeCurrentSession() {
