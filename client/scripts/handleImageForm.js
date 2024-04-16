@@ -80,10 +80,8 @@ async function loadCurrentImage() {
         /**
          * @type {{message: {image: string}}}
          */
-        const {message} = await response.json()
-                        
-        
-        imgTag.src = encodeURI("data:image/png;base64,"+message.image)
+        const { message } = await response.json()
+        imgTag.src = message.image.toString()
     } catch (e) {
         console.error(e)
     }

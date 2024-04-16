@@ -121,7 +121,7 @@ function image_route(string $method, UserModel $model)
             }
 
             $base64_image = base64_encode($result->profilePic);
-            $response = array("image" => $base64_image);
+            $response = array("image" => $result->profilePic);
 
            // echo json_encode($response);
             Http::build_response(StatusCode::OK, $response);
@@ -150,8 +150,8 @@ function image_route(string $method, UserModel $model)
             $body = file_get_contents("php://input");
             $decoded = json_decode($body, true);
 
-            $image = base64_encode($decoded["data"]);
-            if (!$image) {
+            $image = $decoded["data"];
+            if (!$image || $image === '') {
                 Http::build_response(StatusCode::UNPROCESSABLE_ENTITY, "invalid image");
 
                 return;
