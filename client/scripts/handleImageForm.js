@@ -1,12 +1,6 @@
-/**
- * @returns {string}
- */
-String.prototype.splice = function(idx, rem, str) {
-    return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem));
-};
+import { getToken, apiBaseURL } from './main.js'
 
 const imageSubmitter = document.querySelector("input[value=enviar]")
-
 imageSubmitter.addEventListener("click", async function(event) {
     event.preventDefault()
 
@@ -15,7 +9,7 @@ imageSubmitter.addEventListener("click", async function(event) {
     const formData = new FormData(form, imageSubmitter)
     const image = formData.get("image")
 
-    const token = sessionStorage.getItem(session_token_field)
+    const token = getToken()
     if (!token) {
         console.error("no token")
 
@@ -29,7 +23,7 @@ imageSubmitter.addEventListener("click", async function(event) {
         const base64Image = reader.result
 
         try {
-            const response = await fetch(`${apiBaseUrl}image/${token.replaceAll('/', '|')}`, {
+            const response = await fetch(`${apiBaseURL}image/${token.replaceAll('/',  '|')}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ data: base64Image }),
@@ -42,20 +36,24 @@ imageSubmitter.addEventListener("click", async function(event) {
                 throw new Error("Response's not okay")
             }
 
-            console.log("Image Sent")
+            alert("Image enviada com sucesso")
+            window.location.reload()
         } catch (e) {
             console.error(e)
+            alert("houve um error ao enviar sua imagem")
         }
     }
 
     reader.onerror = function (error) {
-        console.log('Error: ', error)
+        alert("Sua é imagem é invalida")
+
+        console.error(error)
     }
 })
 
-async function loadCurrentImage() {
+export async function loadCurrentImage() {
     const imgTag = document.getElementById("user-image")
-    const token = sessionStorage.getItem(session_token_field)
+    const token = getToken()
     if (!token) {
         console.error("no token")
 
@@ -63,7 +61,7 @@ async function loadCurrentImage() {
     }
 
     try {
-        const response = await fetch(`${apiBaseUrl}image/${token.replaceAll('/', '|')}`, {
+        const response = await fetch(`${apiBaseURL}image/${token.replaceAll('/', '|')}`, {
             method: "GET",
             headers: { "Content-Type": "application/json" },
         })
@@ -80,35 +78,7 @@ async function loadCurrentImage() {
          * @type {{message: {image: string}}}
          */
         const { message } = await response.json()
-        imgTag.src = message.image.toString()
-    } catch (e) {
-        console.error(e)
-    }
-}
-
-async function deleteCurrentUser() {
-    const token = sessionStorage.getItem(session_token_field)
-    if (!token) {
-        console.error("no token")
-
-        return;
-    }
-    
-    try {
-        const response = await fetch(`${apiBaseUrl}user/${token.replaceAll('/', '|')}`, {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" },
-        })
-
-        if (!response.ok) {
-            const data = await response.json()
-            console.error("Response's not okay: ", JSON.stringify(data))
-
-            console.log(data)
-            throw new Error("Response's not okay")
-        }
-
-        window.location.replace("http://localhost:80/fredao/client/index.html#login-box")
+        imgTag.src = message.image?.toString() ?? ''
     } catch (e) {
         console.error(e)
     }

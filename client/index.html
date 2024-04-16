@@ -18,9 +18,7 @@
     <header class="center">
         <h1>Site do Fredão</h1>
 
-        <button onclick="removeCurrentSession()">remove session</button>
-
-        <a href="http://localhost:80/fredao/client/home.html">authenticated</a>
+        <a href="http://localhost:80/fredao/client/home.html">home</a>
     </header>
 
     <main class="center">
@@ -41,7 +39,7 @@
 
                     <a href="http://localhost:80/fredao/client/#register-box">Não tem conta?</a>
 
-                    <input type="button" value="enviar" name="submit" class="submit-button" onclick="handleLogin()" />
+                    <input type="button" value="enviar" name="submit" class="submit-button" />
                 </form>
             </article>
 
@@ -85,7 +83,13 @@
         </section>
     </footer>
 
-    <script src="http://localhost/fredao/client/scripts/main.js" type="application/javascript"></script>
+    <script src="http://localhost/fredao/client/scripts/main.js" type="module"></script>
+    <script src="http://localhost/fredao/client/scripts/singin.js" type="module"></script>
+    <script>
+        if (window.location.href == "http://localhost/fredao/client/") {
+            window.location.replace("http://localhost/fredao/client/#login-box")
+        }
+    </script>
 </body>
 
 </html>
