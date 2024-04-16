@@ -127,7 +127,6 @@ function image_route(string $method, UserModel $model)
             Http::build_response(StatusCode::OK, $response);
             break;
 
-        // TODO - make it so that is only possible to change you own profile pic (if not adm)
         case Http::PUT:
             $token = ""; 
             if (!get_param_from_url($token, 0)) {

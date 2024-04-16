@@ -37,7 +37,6 @@ imageSubmitter.addEventListener("click", async function(event) {
 
             if (!response.ok) {
                 const data = await response.json()
-                console.error("Response's not okay: ", JSON.stringify(data))
 
                 console.log(data)
                 throw new Error("Response's not okay")
@@ -82,6 +81,34 @@ async function loadCurrentImage() {
          */
         const { message } = await response.json()
         imgTag.src = message.image.toString()
+    } catch (e) {
+        console.error(e)
+    }
+}
+
+async function deleteCurrentUser() {
+    const token = sessionStorage.getItem(session_token_field)
+    if (!token) {
+        console.error("no token")
+
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${apiBaseUrl}user/${token.replaceAll('/', '|')}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+        })
+
+        if (!response.ok) {
+            const data = await response.json()
+            console.error("Response's not okay: ", JSON.stringify(data))
+
+            console.log(data)
+            throw new Error("Response's not okay")
+        }
+
+        window.location.replace("http://localhost:80/fredao/client/index.html#login-box")
     } catch (e) {
         console.error(e)
     }

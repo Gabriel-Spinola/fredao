@@ -89,25 +89,23 @@ function handle_put()
     }
 }
 
-/// TODO - Ask for authentication
 function handle_delete(UserModel $model, array $url_array)
 {
-    // if (!Auth\is_validated(Position::Admin)) {
-    //     Http::build_response(StatusCode::UNAUTHORIZED);
-
-    //     return;
-    // }
-
-    if (empty($url_array[2])) {
-        Http::build_response(StatusCode::BAD_REQUEST, "Invalid ID");
-
+    $token = ""; 
+    if (!get_param_from_url($token, 0)) {
         return;
     }
 
-    $id = intval($url_array[2]);
-    if (!$model->get_by_id($id)) {
-        Http::not_found();
+    $id = null;
+    if (!Auth\validate_user($token, $model, $id)) {
+        Http::build_response(StatusCode::UNAUTHORIZED);
+        
+        return;
+    }
 
+    if ($id === null) {
+        Http::build_response(StatusCode::UNAUTHORIZED);
+        
         return;
     }
 

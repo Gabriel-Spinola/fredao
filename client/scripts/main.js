@@ -1,5 +1,6 @@
 /// <reference path="types.d.ts" />
 
+const pageUrl = "http://localhost:80/fredao/client/index.html/"
 const apiBaseUrl = "http://localhost/fredao/api/";
 const submitter = document.querySelector("button[value=enviar]")
 const sessionId = null
@@ -57,7 +58,8 @@ async function handleLogin() {
 
         sessionStorage.setItem(session_token_field, token);
         console.log('SESSION: ' + sessionStorage.getItem(session_token_field))
-        /// TODO - REDIRECT
+        
+        window.location.replace(window.location.replace(`${pageUrl}home`))
     } catch (e) {
         console.error(e)
         
@@ -106,7 +108,7 @@ async function handleRegister() {
          */
         const data = await response.json()
         console.log(JSON.stringify(data))
-        // TODO - Redirect to login field on success
+        window.location.replace(`${pageUrl}#login-box`)
     } catch (e) {
         console.error(e)
     }
