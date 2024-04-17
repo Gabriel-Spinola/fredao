@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Home page</title>
+
+    <link rel="stylesheet" href="./styles/toast.css">
+</head>
+
+<body>
+    <h1>Authorized Only</h1>
+
+    <button id="delete-user">delete user</button>
+
+    <form id="image-form">
+        <div class="field">
+            <label for="image">Foto de perfil</label>
+            <input type="file" name="image" id="image" required />
+        </div>
+
+        <input type="submit" value="enviar" name="submit">
+    </form>
+
+    <img src="" width="50" height="50" alt="" id="user-image">
+
+    <script src="http://localhost/fredao/client/scripts/main.js" type="module"></script>
+    <script src="http://localhost/fredao/client/scripts/handleImageForm.js" type="module"></script>
+    <script src="http://localhost/fredao/client/scripts/home.js" type="module"></script>
+</body>
+
+</html>
