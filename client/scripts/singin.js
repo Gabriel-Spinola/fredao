@@ -1,6 +1,8 @@
-/// <reference path="types.d.ts" />
+/// <reference path="types/types.d.ts" />
+/// <reference path="types/toasts.d.ts" />
 
-import { checkSession, apiBaseURL, absoluteURL, initSession, getToken } from "./main.js"
+import { checkSession, apiBaseURL, absoluteURL, initSession } from "./main.js"
+import { toastError, toastSuccess, toastWarn } from "./toasts.js"
 
 const submitter = document.querySelector("button[value=enviar]")
 
@@ -8,7 +10,7 @@ document.querySelector("#login-form input[name=submit]").addEventListener('click
     event.preventDefault()
     
     if (await checkSession()) {
-        alert('Você já está logado')
+        toastWarn("Você já está logado")
 
         return
     }
@@ -20,7 +22,7 @@ document.querySelector("#login-form input[name=submit]").addEventListener('click
     const password = formData.get("password")
 
     if (username === '' || password === '') {
-        alert("Usuário ou senha não podem estar vazios")
+        toastError("Usuário ou senha não podem estar vazios")
 
         return;
     }
@@ -42,7 +44,7 @@ document.querySelector("#login-form input[name=submit]").addEventListener('click
 
             const { status, message } = data 
             if (status === 404) {
-                alert(message)
+                console.error(message)
             } 
 
             console.log(data)
@@ -60,7 +62,7 @@ document.querySelector("#login-form input[name=submit]").addEventListener('click
         window.location.replace(`${absoluteURL}home.html`)
     } catch (e) {
         console.error(e)
-        alert("Não foi possível efetuar o login")
+        toastError("Não foi possível efetuar o login")
     }
 })
 
@@ -73,13 +75,13 @@ document.querySelector("#register-form input[name=submit]").addEventListener('cl
     const confirmPass = formData.get("confirm-password")
 
     if (username === '' || password === '') {
-        alert("Usuário ou senha não podem estar vazios")
+        toastError("Usuário ou senha não podem estar vazios")
 
         return;
     }
 
     if (password !== confirmPass) {
-        alert("As senhas não batem")
+        toastError("As senhas não batem")
     }
 
     /**
@@ -108,9 +110,9 @@ document.querySelector("#register-form input[name=submit]").addEventListener('cl
         console.log(JSON.stringify(data))
         window.location.replace(`${absoluteURL}#login-box`)
 
-        alert("Conta criado com succeso, faça login para cotinuar")
+        toastSuccess("Conta criado com succeso, faça login para cotinuar")
     } catch (e) {
         console.error(e)
-        alert("Essa nome de usuário é existente, ou houve algum erro ao criar sua conta")
+        toastError("Essa nome de usuário é existente, ou houve algum erro ao criar sua conta")
     }
 })
