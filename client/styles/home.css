@@ -1,1 +1,122 @@
 /** LINK - https://codepen.io/pixelsultan/pen/WrWZpd */
+/** LINK - https://codepen.io/yuhomyan/pen/xxVOPQL */
+
+:root {
+    --black: rgb(29, 29, 29);
+    --aside-max-width: 24vw;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: var(--black);
+}
+
+aside {
+    position: fixed;
+    left: -100vw;
+    top: 0;
+    min-height: 100vh;
+    width: var(--aside-max-width);
+    max-width: var(--aside-max-width);
+    background-color: rgb(239, 239, 239);
+    transition: all 1s ease;
+}
+
+/** Opens when #check */
+#check:checked ~ aside {
+    left: 0;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 5);
+}
+
+aside #profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 4vh;
+}
+
+aside #profile > h2 {
+    font-size: xx-large;
+}
+
+aside #profile > small {
+    transform: translateY(-1.7vh);
+    opacity: .6;
+}
+
+aside #profile > img {
+    border-radius: 100%;
+    border: 2px solid rgba(0, 0, 0, 0.319);
+}
+
+aside #info {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 2vw;
+    height: 12vh;
+    margin-top: 3vh;
+    max-width: var(--aside-max-width);
+}
+
+aside #info > .info-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+aside #info > .info-box > h3 {
+    transform: translateY(-4vh);
+    font-size: large;
+    opacity: .5;
+}
+
+aside #info > .info-box > h1 {
+    font-size: xx-large;
+}
+
+@media (max-width: 1080px) {
+    aside #info > .info-box > h1 {
+        font-size: x-large;
+    }
+}
+
+aside nav {
+    margin-top: 8vh;
+}
+
+aside nav > ul {
+    list-style: none;
+    font-size: 28px;
+}
+
+aside nav > ul > li {
+    margin-top: 2vh;
+}
+
+aside nav > ul > li a {
+    text-decoration: none;
+    color: var(--black);
+}
+
+aside nav > ul > li a:hover {
+    text-decoration: underline;
+}
+
+aside nav > ul > li span {
+    padding-left: 15px;
+}
+
+.icon {
+    width: 24px;
+    opacity: .7;
+}
+
+#icon-small {
+    width: 28px;
+    opacity: .7;
+}
