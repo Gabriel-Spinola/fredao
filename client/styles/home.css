@@ -128,13 +128,26 @@ main {
     gap: 10vw;
     grid-auto-rows: minmax(100px, auto);
     margin: 5vh 0;
+    transition: all 1s ease-in-out;
 }
+
+#check:checked ~ main {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0vw;
+    width: calc(100vw - var(--aside-max-width));
+    margin-left: calc(var(--aside-max-width) + 4vw);
+} 
 
 main .news-box {
     display: flex;
     flex-direction: row;
-    gap: 5vw;
-    max-height: 25vh;
+    gap: 3vw;
+    min-height: 30vh;
+}
+
+#check:checked ~ main .news-box {
+    margin: 5vh 0;
 }
 
 main .news-box > .left {

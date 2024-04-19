@@ -1,4 +1,4 @@
-/// <reference path="types.d.ts" />
+/// <reference path="types/types.d.ts" />
 
 export const absoluteURL = "http://localhost:80/fredao/client/"
 export const apiBaseURL = "http://localhost/fredao/api/";
@@ -70,11 +70,6 @@ export function initSession(token) {
 export function removeCurrentSession() {
     sessionStorage.removeItem(sessionTokenField)
     sessionStorage.removeItem(sessionIdField)
-}
-
-
-export function redirectToSignin() {
-    
 }
 
 (async () => {

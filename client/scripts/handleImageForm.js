@@ -2,7 +2,7 @@ import { getToken, apiBaseURL } from './main.js'
 import { showToast, toastError } from './toasts.js'
 
 const imageSubmitter = document.querySelector("input[value=enviar]")
-imageSubmitter.addEventListener("click", async function(event) {
+imageSubmitter?.addEventListener("click", async function(event) {
     event.preventDefault()
 
     const form = document.getElementById("image-form")
