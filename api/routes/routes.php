@@ -12,8 +12,10 @@ require_once __DIR__ . "/../models/user.model.php";
 require_once __DIR__ . "/user.routes.php";
 require_once __DIR__ . "/../authentication/auth.php";
 require_once __DIR__ . "/../authentication/crypt.php";
+require_once __DIR__ . "/news.routes.php";
 
 use Fredao\Http;
+use Model\NewsModel;
 use Model\UserModel;
 use Fredao\Auth;
 use Fredao\StatusCode;
@@ -44,12 +46,20 @@ function run($databaseConn): void
     $method = $_SERVER["REQUEST_METHOD"];
     $url_array = explode("/", $_SERVER["REQUEST_URI"]);
 
+    Http::build_response(StatusCode::OK);
+    return;
     // Removes the two first indicies from the array (/fredao/api/)
     array_shift($url_array);
     array_shift($url_array);
 
+    $token = "";
+    $is_authenticated = false;
+        /*get_param_from_url($token) and 
+        Auth\validate_user($token, new UserModel($databaseConn)) == StatusCode::OK;*/
+
     match ($url_array[1]) {
         "user" => user_routes($method, new UserModel($databaseConn), $url_array),
+        "news" and $is_authenticated => news_routes($method, new NewsModel($databaseConn), $url_array),
         "image" => image_route($method, new UserModel($databaseConn)),
         "auth" => auth_routes($method, new UserModel($databaseConn)),
         "" => fredao_route($method),
@@ -188,9 +198,10 @@ function fredao_route(string $method): void
 }
 
 /**
- * @param int start from 0, being 0 the first param
+ * @param string $param
+ * @param int $index from 0, being 0 the first param
  */
-function get_param_from_url(string &$param, int $index): bool
+function get_param_from_url(string &$param, int $index = 0): bool
 {
     global $url_array;
 

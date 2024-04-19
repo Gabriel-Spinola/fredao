@@ -19,11 +19,10 @@ class UserModel
     public ?string $profilePic = null;
 
     public function __construct(
-        private Database $db,
-    ) {
-    }
+        public Database $db,
+    ) { }
 
-    public function get_by_id(int $id): ?UserModel
+    public function get_by_id(int $id): ?Self
     {
         $query = $this->db->connect()->prepare("SELECT * FROM " . UserModelFields::TABLE_NAME . " WHERE `id`=?;");
         $query->execute([$id]);
@@ -32,7 +31,7 @@ class UserModel
         return $this->collect($data);
     }
 
-    public function get_by_account(): ?UserModel
+    public function get_by_account(): ?Self
     {
         $query = $this->db->connect()->prepare("SELECT * FROM " . UserModelFields::TABLE_NAME . " WHERE `name`=? AND `password`=?;");
         $query->execute([$this->username, $this->password]);
@@ -60,7 +59,7 @@ class UserModel
         }
     }
 
-    public function update(UserModel $user): ?UserModel
+    public function update(UserModel $user): ?Self
     {
         $query = $this->db->connect()->prepare(
             "UPDATE " . UserModelFields::TABLE_NAME .
@@ -94,7 +93,7 @@ class UserModel
         return $query->rowCount() > 0;
     }
 
-    private function collect(?array $data): ?UserModel
+    private function collect(?array $data): ?Self
     {
         if (empty($data) || empty($data[0])) {
             return null;

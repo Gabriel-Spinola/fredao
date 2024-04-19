@@ -8,7 +8,7 @@ require_once __DIR__ . '/database.php';
 
 use Database;
 
-define("ERROR_REPORTING", 0);
+define("ERROR_REPORTING", 1);
 
 enum Position: string
 {
