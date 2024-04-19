@@ -1,6 +1,9 @@
 /** LINK - https://codepen.io/pixelsultan/pen/WrWZpd */
 /** LINK - https://codepen.io/yuhomyan/pen/xxVOPQL */
 
+/** TODO - Responsiviness **/
+/** FIXME - The animations are flicking **/
+
 :root {
     --black: rgb(29, 29, 29);
     --aside-max-width: 24vw;
@@ -139,6 +142,7 @@ main {
     margin-left: calc(var(--aside-max-width) + 4vw);
 } 
 
+/** TODO - Make it a box */
 main .news-box {
     display: flex;
     flex-direction: row;
@@ -164,4 +168,29 @@ main .news-box > .left > h3 {
 main .news-box > .right {
     display: inline;
     bottom: 0;
+}
+
+@media (max-width: 1220px) {
+    main {
+        gap: 16vw;
+    }
+
+    main .news-box{
+        display: flex;
+        flex-direction: column;  
+        text-align: center;     
+        justify-content: center;
+        align-items: center;
+    }
+
+    main .news-box > .left {
+        max-width: 25vw;     
+    }
+}
+
+@media (max-width: 1080px) {
+    main {
+        display: flex;
+        flex-direction: column;
+    }
 }
