@@ -120,3 +120,35 @@ aside nav > ul > li span {
     width: 28px;
     opacity: .7;
 }
+
+/** MAIN **/
+main {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10vw;
+    grid-auto-rows: minmax(100px, auto);
+    margin: 5vh 0;
+}
+
+main .news-box {
+    display: flex;
+    flex-direction: row;
+    gap: 5vw;
+    max-height: 25vh;
+}
+
+main .news-box > .left {
+    display: flex;
+    flex-direction: column; 
+    max-width: 15vw;
+}
+
+main .news-box > .left > h3 {
+    opacity: .8;
+    transform: translateY(-1vh);
+}
+
+main .news-box > .right {
+    display: inline;
+    bottom: 0;
+}

@@ -10,5 +10,5 @@
 body {
     background-color: #f1f1f1;
     font-family: 'Poppins', sans-serif;
-    overflow: hidden;
+    overflow-x: hidden;
 }
