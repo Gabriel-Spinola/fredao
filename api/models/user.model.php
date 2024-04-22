@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 namespace Model;
 
 require __DIR__ . "/../database.php";
@@ -23,7 +23,7 @@ class UserModel
     ) {
     }
 
-    public function get_by_id(int $id): ?UserModel
+    public function get_by_id(int $id): ?Self
     {
         $query = $this->db->connect()->prepare("SELECT * FROM " . UserModelFields::TABLE_NAME . " WHERE `id`=?;");
         $query->execute([$id]);
@@ -32,7 +32,7 @@ class UserModel
         return $this->collect($data);
     }
 
-    public function get_by_account(): ?UserModel
+    public function get_by_account(): ?Self
     {
         $query = $this->db->connect()->prepare("SELECT * FROM " . UserModelFields::TABLE_NAME . " WHERE `name`=? AND `password`=?;");
         $query->execute([$this->username, $this->password]);
@@ -60,8 +60,11 @@ class UserModel
         }
     }
 
-    public function update(UserModel $user): ?UserModel
+    // TODO - 
+    public function update(UserModel $user): ?Self
     {
+        assert(false, "Not implemented;");
+
         $query = $this->db->connect()->prepare(
             "UPDATE " . UserModelFields::TABLE_NAME .
             "SET `name`=?, `password`=?, `profile-pic`=?",
@@ -94,7 +97,7 @@ class UserModel
         return $query->rowCount() > 0;
     }
 
-    private function collect(?array $data): ?UserModel
+    private function collect(?array $data): ?Self
     {
         if (empty($data) || empty($data[0])) {
             return null;

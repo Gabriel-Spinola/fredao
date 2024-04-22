@@ -13,6 +13,7 @@ use Fredao\Auth;
 use Model\UserModel;
 use Fredao\Http;
 use Fredao\StatusCode;
+use function Fredao\Router\get_param_from_url;
 
 function user_routes(string $method, UserModel $model, array $url_array): void
 {

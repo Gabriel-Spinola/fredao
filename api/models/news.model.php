@@ -13,6 +13,8 @@ final class NewsModelFields
     public const CONTENT = "content";
     public const IMAGE = "image";
     public const CREATOR_ID = "creator_id_fk";
+
+    public const REQUIRED_FIELDS = array(Self::TITLE, Self::DESCRIPTION, Self::CONTENT, Self::IMAGE, Self::CREATOR_ID);
 }
 
 class NewsModel
@@ -25,7 +27,7 @@ class NewsModel
     public int $creator_id;
 
     public function __construct(
-        private Database $db,
+        private ?Database $db,
     ){}
  
     /**
@@ -47,18 +49,19 @@ class NewsModel
     public function insert(): bool
     {
         $query = $this->db->connect()->prepare(
-            "INSERT INTO " . UserModelFields::TABLE_NAME .
+            "INSERT INTO " . NewsModelFields::TABLE_NAME .
             "(`id`," .
                 NewsModelFields::TITLE . ", " .
                 NewsModelFields::DESCRIPTION . ", " . 
                 NewsModelFields::CONTENT . ", "  .
-                NewsModelFields::IMAGE . 
+                NewsModelFields::IMAGE . ", "  .
+                NewsModelFields::CREATOR_ID . 
             ")" .
-            "VALUES (null, ?, ?, ?)"
+            "VALUES (null, ?, ?, ?, ?, ?)"
         );
 
         try {
-            return $query->execute([$this->title, $this->description, $this->content, $this->image]);
+            return $query->execute([$this->title, $this->description, $this->content, $this->image, $this->creator_id]);
         } catch (PDOException $e) {
             // Env or Prod
             echo $e->getMessage();
@@ -68,16 +71,17 @@ class NewsModel
     }
 
     /// TODO - 
-    public function update(UserModel $user): ?Self
+    public function update(): ?Self
     {
-        assert(false, "Not implemented");
-
         $query = $this->db->connect()->prepare(
             "UPDATE " . UserModelFields::TABLE_NAME .
-            "SET `name`=?, `password`=?, `profile-pic`=?",
+            "SET `" . NewsModelFields::TITLE . "`=?," .
+            "`" . NewsModelFields::DESCRIPTION . "`=?," . 
+            "`" . NewsModelFields::CONTENT . "`=?" .
+            "`" . NewsModelFields::IMAGE . "`=?"
         );
 
-        $query->execute([$user->username, $user->password, null]);
+        $query->execute([$this->title, $this->description, $this->content, $this->image]);
         $data = $query->fetchAll();
 
         return $this->iterator_collect($data);
@@ -87,7 +91,7 @@ class NewsModel
     public function delete(int $id): bool
     {
         $query = $this->db->connect()->prepare(
-            "DELETE FROM " . UserModelFields::TABLE_NAME .
+            "DELETE FROM " . NewsModelFields::TABLE_NAME .
             " WHERE `id`=?"
         );
 
