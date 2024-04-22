@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * ! Authenticated routes require the user token as first parameter
  * REVIEW - Using '|' to replace '/' in the url params
@@ -9,14 +9,19 @@ namespace Fredao\Router;
 
 require_once __DIR__ . "/../http.php";
 require_once __DIR__ . "/../models/user.model.php";
+require_once __DIR__ . "/../models/news.model.php";
 require_once __DIR__ . "/user.routes.php";
+require_once __DIR__ . "/news.routes.php";
 require_once __DIR__ . "/../authentication/auth.php";
 require_once __DIR__ . "/../authentication/crypt.php";
 
 use Fredao\Http;
+use Model\NewsModel;
 use Model\UserModel;
 use Fredao\Auth;
 use Fredao\StatusCode;
+use function Fredao\Router\News\news_routes;
+use function Fredao\Router\User\user_routes;
 
 $url_array = array();
 
@@ -50,6 +55,7 @@ function run($databaseConn): void
 
     match ($url_array[1]) {
         "user" => user_routes($method, new UserModel($databaseConn), $url_array),
+        "news" => news_routes($method, new NewsModel($databaseConn), $url_array),
         "image" => image_route($method, new UserModel($databaseConn)),
         "auth" => auth_routes($method, new UserModel($databaseConn)),
         "" => fredao_route($method),
@@ -190,7 +196,7 @@ function fredao_route(string $method): void
 /**
  * @param int start from 0, being 0 the first param
  */
-function get_param_from_url(string &$param, int $index): bool
+function get_param_from_url(string &$param, int $index = 0): bool
 {
     global $url_array;
 

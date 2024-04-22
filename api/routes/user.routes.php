@@ -3,7 +3,7 @@
  * ! Authenticated routes require the user token as first parameter
  */
 
-namespace Fredao\Router;
+namespace Fredao\Router\User;
 
 require_once __DIR__ . "/../http.php";
 require_once __DIR__ . "/../authentication/auth.php";
