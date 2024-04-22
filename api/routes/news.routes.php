@@ -43,7 +43,7 @@ function handle_post(NewsModel $model, array $url_array): void
         return;
     }
 
-    $err = $model->insert()->is_err();
+    $err = $model->insert()->failed();
     if ($err) {
         Http::build_response(StatusCode::INTERNAL_SERVER_ERROR, "Failed to insert news " . $err->getMessage());
 
