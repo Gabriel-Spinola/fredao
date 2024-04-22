@@ -4,6 +4,25 @@ namespace Model;
 use Database;
 use PDOException;
 
+final class Result 
+{
+    public function __construct(private \Exception|PDOException|null $error){}
+
+    public function failed(): \Exception|PDOException|false 
+    {
+        if (!$this->error) {
+            return false;
+        }
+
+        return $this->error;
+    }
+
+    public static function ok(): Result 
+    {
+        return new Self(null);
+    }
+}
+
 final class NewsModelFields
 {
     public const TABLE_NAME = "fred_news_tb";
@@ -46,27 +65,29 @@ class NewsModel
     }
 
     // TODO - Return custom error for handing client input errors
-    public function insert(): bool
+    public function insert(?PDOException &$exception = null): Result
     {
-        $query = $this->db->connect()->prepare(
-            "INSERT INTO " . NewsModelFields::TABLE_NAME .
-            "(`id`," .
-                NewsModelFields::TITLE . ", " .
-                NewsModelFields::DESCRIPTION . ", " . 
-                NewsModelFields::CONTENT . ", "  .
-                NewsModelFields::IMAGE . ", "  .
-                NewsModelFields::CREATOR_ID . 
-            ")" .
-            "VALUES (null, ?, ?, ?, ?, ?)"
-        );
-
         try {
-            return $query->execute([$this->title, $this->description, $this->content, $this->image, $this->creator_id]);
-        } catch (PDOException $e) {
-            // Env or Prod
-            echo $e->getMessage();
+            $query = $this->db->connect()->prepare(
+                "INSERT INTO " . NewsModelFields::TABLE_NAME .
+                "(`id`," .
+                    NewsModelFields::TITLE . ", " .
+                    NewsModelFields::DESCRIPTION . ", " . 
+                    NewsModelFields::CONTENT . ", "  .
+                    NewsModelFields::IMAGE . ", "  .
+                    NewsModelFields::CREATOR_ID . 
+                ")" .
+                "VALUES (null, ?, ?, ?, ?, ?)"
+            );
 
-            return false;
+            if (!$query->execute([$this->title, $this->description, $this->content, $this->image, $this->creator_id])) {
+                throw new \Exception("Failed to execute insert query");
+            }
+
+            return Result::ok();
+        } catch (PDOException|\Exception $e) {
+
+            return new Result($e);
         }
     }
 
