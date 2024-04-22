@@ -14,6 +14,7 @@ use Model\UserModel;
 use Fredao\Http;
 use Fredao\StatusCode;
 use function Fredao\Router\get_param_from_url;
+use function Fredao\Router\get_id_in_url;
 
 /**
  * @param string
@@ -23,7 +24,7 @@ use function Fredao\Router\get_param_from_url;
 function user_routes(string $method, UserModel $model, array $url_array): void
 {
     match ($method) {
-        Http::GET => handle_get($url_array),
+        Http::GET => handle_get($model, $url_array),
         Http::POST => handle_post($model, $url_array),
         Http::PUT => handle_put(),
         Http::DELETE => handle_delete($model, $url_array),
@@ -32,9 +33,14 @@ function user_routes(string $method, UserModel $model, array $url_array): void
     };
 }
 
-function handle_get(array $url_array): void
+function handle_get(UserModel $model, array $url_array): void
 {
+    $id = get_id_in_url($model);
+    if (!$id) {
+        Http::build_response(StatusCode::BAD_REQUEST, "Invalid ID");
 
+        return;
+    }
 
     Http::build_response(StatusCode::OK);
 }

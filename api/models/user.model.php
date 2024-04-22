@@ -11,7 +11,7 @@ final class UserModelFields
     public const TABLE_NAME = "fred_users_tb";
 }
 
-class UserModel
+class UserModel implements Model
 {
     public ?int $id;
     public string $username;

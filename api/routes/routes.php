@@ -17,6 +17,7 @@ require_once __DIR__ . "/../authentication/crypt.php";
 
 use Fredao\Http;
 use Model\NewsModel;
+use Model\Model;
 use Model\UserModel;
 use Fredao\Auth;
 use Fredao\StatusCode;
@@ -210,7 +211,7 @@ function get_param_from_url(string &$param, int $index = 0): bool
     return true;
 }
 
-function get_id_in_url(UserMoDel $model, int $index = 0): int|bool
+function get_id_in_url(Model $model, int $index = 0): int|false
 {
     global $url_array;
 

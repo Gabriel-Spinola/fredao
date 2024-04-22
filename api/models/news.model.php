@@ -39,7 +39,7 @@ final class NewsModelFields
     public const REQUIRED_FIELDS = array(Self::TITLE, Self::DESCRIPTION, Self::CONTENT, Self::IMAGE, Self::CREATOR_ID);
 }
 
-class NewsModel
+class NewsModel implements Model
 {
     public ?int $id;
     public string $title;
@@ -52,6 +52,15 @@ class NewsModel
         private ?Database $db,
     ){}
  
+    public function get_by_id(int $id): ?Self
+    {
+        $query = $this->db->connect()->prepare("SELECT * FROM " . NewsModelFields::TABLE_NAME . " WHERE `id`=?;");
+        $query->execute([$id]);
+
+        $data = $query->fetchAll();
+        return $this->iterator_collect($data);
+    }
+
     /**
      * TODO - Pagination
      * 
