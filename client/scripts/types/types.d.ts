@@ -4,9 +4,9 @@ declare namespace FrontFredao {
         password: string,
     }
     
-    export type APIResponse = {
+    export type APIResponse<MessageType = string> = {
         status: number,
-        message: string,
+        message: MessageType,
     }
 
     export type FrabricatedResponse = {} 

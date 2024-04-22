@@ -1,5 +1,8 @@
-import { loadCurrentImage } from "./handleImageForm.js" 
+/// <reference path="types/types.d.ts" />
+/// <reference path="types/news.d.ts" />
+
 import { checkSession, getToken, absoluteURL, apiBaseURL } from "./main.js"
+import { toastError } from "./toasts.js";
 
 const lorem = "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugiat nulla, illum id, maiores nemo dolorum modi voluptas expedita enim ad ut temporibus corrupti blanditiis dicta. Ea recusandae qui amet. Delectus.";
 
@@ -14,56 +17,6 @@ const placeholder = [
     { title: "Test5", description: lorem, content: 'a', image: "./assets/fredao.jpeg" },
     { title: "Test6", description: lorem, content: 'a', image: "./assets/fredao.jpeg" },
 ]
-
-window.onload = async () => {
-    const loginPageUrl = `${absoluteURL}#login-box`
-
-    // TODO - Replace by spinner
-    const body = document.querySelector("body")
-    body.hidden = true;
-    
-    try {
-        const isAuthenticated = await checkSession()
-        if (!isAuthenticated) {
-            window.location.replace(loginPageUrl)
-        }
-    } catch (e) {
-        window.location.replace(loginPageUrl)
-    }
-
-    body.hidden = false
-    document.getElementById("delete-user")?.addEventListener('click', async function(event) {
-        const token = getToken()
-        if (!token) {
-            console.error("no token")
-    
-            return;
-        }
-    
-        try {
-            const response = await fetch(`${apiBaseURL}user/${token.replaceAll('/', '|')}`, {
-                method: "DELETE",
-                headers: { "Content-Type": "application/json" },
-            })
-    
-            if (!response.ok) {
-                const data = await response.json()
-                console.error("Response's not okay: ", JSON.stringify(data))
-    
-                console.log(data)
-                throw new Error("Response's not okay")
-            }
-    
-            window.location.replace(`${absoluteURL}#login-box`)
-        } catch (e) {
-            console.error(e)
-    
-            alert("failed to delete current user")
-        }
-    })
-
-    await loadCurrentImage()
-}
 
 const main = document.querySelector('main')
 
@@ -108,8 +61,94 @@ export function loadNews(news) {
     return newsBox
 }
 
-for (let i = 0; i < placeholder.length; i++) {
-    loadNews(placeholder[i])
-    loadNews(placeholder[i])
-    loadNews(placeholder[i])
+/**
+ * @returns {FrontFredao.News[]}
+ */
+async function fetchNews() {
+    try {
+        const response = await fetch(`${apiBaseURL}news`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        })
+
+        if (!response.ok) {
+            const data = await response.json()
+            console.error("Response's not okay: ", JSON.stringify(data))
+
+            const { status, message } = data 
+            if (status === 404) {
+                console.error(message)
+            } 
+
+            console.log(data)
+            throw new Error("Response's not okay")
+        }
+
+        /**
+         * @type {FrontFredao.APIResponse<FrontFredao.News>}
+         */
+        const data = await response.json()
+        const news = data.message
+
+        return news
+    } catch (e) {
+        console.error(e)
+        toastError("Failed to load news")
+    }
+}
+
+window.onload = async () => {
+    const loginPageUrl = `${absoluteURL}#login-box`
+
+    // TODO - Replace by spinner
+    const body = document.querySelector("body")
+    body.hidden = true;
+    
+    try {
+        const isAuthenticated = await checkSession()
+        if (!isAuthenticated) {
+            window.location.replace(loginPageUrl)
+        }
+    } catch (e) {
+        window.location.replace(loginPageUrl)
+    }
+
+    const news = await fetchNews()
+    console.log(news)
+
+    body.hidden = false
+    document.getElementById("delete-user")?.addEventListener('click', async function(event) {
+        const token = getToken()
+        if (!token) {
+            console.error("no token")
+    
+            return;
+        }
+    
+        try {
+            const response = await fetch(`${apiBaseURL}user/${token.replaceAll('/', '|')}`, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+            })
+    
+            if (!response.ok) {
+                const data = await response.json()
+                console.error("Response's not okay: ", JSON.stringify(data))
+    
+                console.log(data)
+                throw new Error("Response's not okay")
+            }
+    
+            window.location.replace(`${absoluteURL}#login-box`)
+        } catch (e) {
+            console.error(e)
+    
+            alert("failed to delete current user")
+        }
+    })
+
+    for (let i = 0; i < placeholder.length; i++) {
+        loadNews(placeholder[i])
+        loadNews(placeholder[i])
+    }    
 }

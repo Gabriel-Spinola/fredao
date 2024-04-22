@@ -9,6 +9,11 @@ use Fredao\StatusCode;
 use Model\NewsModel;
 use Model\NewsModelFields;
 
+/**
+ * @param string
+ * @param NewsModel
+ * @param string[]
+ */
 function news_routes(string $method, NewsModel $model, array $url_array): void
 {
     match ($method) {
@@ -45,7 +50,10 @@ function handle_post(NewsModel $model, array $url_array): void
 
     $err = $model->insert()->failed();
     if ($err) {
-        Http::build_response(StatusCode::INTERNAL_SERVER_ERROR, "Failed to insert news " . $err->getMessage());
+        Http::build_response(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            ENVIRONMENT == DEV ? $err->getMessage() : "Failed to insert news"
+        );
 
         return;
     }

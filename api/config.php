@@ -3,7 +3,12 @@ $env = parse_ini_file('.env');
 
 define("DEV", 0);
 define("PROD", 1);
-define("ENVIRONMENT", $env["ENV"] === "DEV" ? DEV : PROD);
+
+if (!get_browser()) {
+    define("ENVIRONMENT", $env["ENV"] === "DEV" ? DEV : PROD);
+} else {
+    define("ENVIRONMENT", PROD);
+}
 
 if (ENVIRONMENT === DEV) {
     error_reporting(E_ALL);

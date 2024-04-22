@@ -15,10 +15,15 @@ use Fredao\Http;
 use Fredao\StatusCode;
 use function Fredao\Router\get_param_from_url;
 
+/**
+ * @param string
+ * @param UserModel
+ * @param string[]
+ */
 function user_routes(string $method, UserModel $model, array $url_array): void
 {
     match ($method) {
-        Http::GET => handle_get(),
+        Http::GET => handle_get($url_array),
         Http::POST => handle_post($model, $url_array),
         Http::PUT => handle_put(),
         Http::DELETE => handle_delete($model, $url_array),
@@ -27,8 +32,10 @@ function user_routes(string $method, UserModel $model, array $url_array): void
     };
 }
 
-function handle_get(): void
+function handle_get(array $url_array): void
 {
+
+
     Http::build_response(StatusCode::OK);
 }
 
