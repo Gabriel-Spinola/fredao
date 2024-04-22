@@ -8,6 +8,9 @@ final class Result
 {
     public function __construct(private \Exception|PDOException|null $error){}
 
+    /**
+     * @return \Exception|PDOException|false - If no errors found always returns false ortherwise return the expection
+     */
     public function failed(): \Exception|PDOException|false 
     {
         if (!$this->error) {
@@ -86,7 +89,6 @@ class NewsModel
 
             return Result::ok();
         } catch (PDOException|\Exception $e) {
-
             return new Result($e);
         }
     }

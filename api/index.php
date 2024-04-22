@@ -14,8 +14,6 @@ enum Position: string
     case Admin = 'ADMIN';
 }
 
-$env = parse_ini_file('.env');
-
 $database = new Database();
 
 Router\allow_cors();

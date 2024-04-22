@@ -1,8 +1,11 @@
 <?php declare(strict_types=1);
+$env = parse_ini_file('.env');
 
-define("ERROR_REPORTING", 1);
+define("DEV", 0);
+define("PROD", 1);
+define("ENVIRONMENT", $env["ENV"] === "DEV" ? DEV : PROD);
 
-if (ERROR_REPORTING === 1) {
+if (ENVIRONMENT === DEV) {
     error_reporting(E_ALL);
     ini_set('display_errors', 'On');
 } else {
